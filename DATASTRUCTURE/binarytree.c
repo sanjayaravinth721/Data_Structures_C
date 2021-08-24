@@ -1,72 +1,134 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-struct NODE{
-    int data;
-    struct NODE* left;
-    struct NODE* right;
+
+
+
+struct Node{
+    int a;
+    struct Node *left;
+    struct Node *right;
 };
 
-struct NODE* create(int element){
-    struct NODE* newnode = (struct NODE*)malloc(sizeof(struct NODE)); //200 //300 //400 //500
-    newnode->data=element;                                            //15  //10  //20  //8
-    newnode->left=NULL;
-    newnode->right=NULL;
-    return newnode;
+struct Node* create(struct Node* temp,int ele){
+    
+    if(temp==NULL){
+        temp=(struct Node*)malloc(sizeof(struct Node));
+        temp->a=ele;
+        temp->left=NULL;
+        temp->right=NULL;
+        return temp;
+    }
+    else{
+        if(ele<temp->a){
+            temp->left=create(temp->left,ele);
+        }
+        if(ele>temp->a){
+            temp->right=create(temp->right,ele);
+        }
+    }
+    
+    return(temp);
 }
-
-struct NODE* insert(struct NODE* temp){
-    struct NODE* root = temp;
-    printf("Enter the elements to be inserted\n..");
-    int element;
-    scanf("%d",element);
-    
-   
-    if(temp==NULL){                             
-        temp=create(element);
-    }
-    do{
-        int new;
-        scanf("%d",new);
-    if(new<=temp->data){                                                 
-        temp->left=create(new);  
-         temp=temp->left;                                          
-    }
-   
-    else{                                       
-        temp->right=create(new);
-        temp=temp->right;
-    }
-   
-    
-    }while(temp->left!=NULL && temp->right!=NULL);
-    
-    return root;
-    
-}
-
-void display(struct NODE* temp){
-    printf("Printing...");
-     printf("%d ",temp->data);
-    do{
+struct Node* minValue(struct Node* root){
+    struct Node* temp = root;
+    while(temp->left!=NULL){
         temp=temp->left;
-        printf("%d ",temp->data);
-        temp=temp->right;
-        
-    }while(temp->left!=NULL && temp->right!=NULL);
+    }
+    printf("minimum is : %d",temp->a);
+    return temp;
 }
 
-
-    
+void inorder(struct Node* temp){
+    if(temp!=NULL){
+    inorder(temp->left);
+    printf("%d ",temp->a);
+    inorder(temp->right);
+    }
    
+}
+struct Node* delete(struct Node* temp,int data){
+    if(temp==NULL){
+        return temp;
+    }
+    else if(temp->a > data){
+        temp->left=delete(temp->left,data);
+    }
+    else if (temp->a < data){
+        temp->right=delete(temp->right,data);
+    }
+    else{
+        if(temp->left==NULL && temp->right==NULL){
+           
+            free(temp);
+            temp=NULL;
+            return temp;
+        }
+        else if(temp->left!=NULL && temp->right==NULL){
+            struct Node* t = temp;
+            temp=temp->left;
+            free(temp);
+            temp=NULL;
+            return t;
+        }
+        else if(temp->left==NULL && temp->right!=NULL){
+            struct Node* t = temp;
+            temp=temp->right;
+            free(temp);
+            temp=NULL;
+            return t;
+        }
+        else{
+            struct Node* t = minValue(temp->right);
+            temp->a=t->a;
+            temp->right=delete(temp->right,data);
+            return temp;
+        }
+    }
 
-    
-
+}
 
 int main(){
-    struct NODE* head=NULL;
-    struct NODE* root=insert(head);
-    display(root);
+    struct Node* root = NULL;
+
+    int x=1;
+    while(x){
+        printf("\n 1->insert");
+        printf("\n 2->display");
+        printf("\n 3->find minimum");
+        printf("\n 4->delete");
+        printf("\n 0->exit\n");
+        int a;
+        scanf("%d",&a);
+        
+        int data;
+        switch(a){
+            case 1:
+                printf("Enter the number: ");
+                scanf("%d",&data);
+                root=create(root,data);
+                printf("%d\n",root->a);
+                break;
+            case 2:
+                 inorder(root);
+                 break;
+            case 3:
+                minValue(root);
+                break;
+            case 4:
+               
+                printf("Enter the element to be deleted :");
+                int p;
+                scanf("%d",&p);
+                root= delete(root,p);
+                break;
+            case 0:
+                x=0;
+                printf("Exiting..");
+                break;
+        }
+    }
+  
 }
 
 
